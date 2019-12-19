@@ -751,9 +751,11 @@ void synccom_port_send_data(struct synccom_port *port, unsigned bar,
 	
 	offset = port_offset(port, bar, register_offset);
 	
+	mutex_lock(&port->register_access_mutex);
 	     usb_bulk_msg(port->udev, 
 	     usb_sndbulkpipe(port->udev, 6), data, 
 		 byte_count, &count, 0);		
+	mutex_unlock(&port->register_access_mutex);
 	
 }
 
@@ -783,9 +785,11 @@ void synccom_port_set_clock(struct synccom_port *port, unsigned bar,
 	msg[5] = data[2];
 	msg[6] = data[3];
 	
+	mutex_lock(&port->register_access_mutex);
 	     usb_bulk_msg(port->udev,
 	     usb_sndbulkpipe(port->udev, 1), msg,
 		 7, &count, HZ*10);
+	mutex_unlock(&port->register_access_mutex);
 	
 	kfree(msg);
 }
@@ -1445,9 +1449,11 @@ void program_synccom(struct synccom_port *port, char *line)
 		 msg[i+1] = line[i];
 	 }
 
+	mutex_lock(&port->register_access_mutex);
 	  usb_bulk_msg(port->udev,
 	        usb_sndbulkpipe(port->udev, 1), msg,
 		    i + 1, &count, HZ*10);
+	mutex_unlock(&port->register_access_mutex);
 
 	kfree(msg);
 }
