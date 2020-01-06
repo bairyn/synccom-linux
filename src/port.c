@@ -932,6 +932,7 @@ int synccom_port_purge_rx(struct synccom_port *port)
 
 	dev_dbg(port->device, "purge_rx\n");
 
+	mutex_lock(&port->running_bc_mutex);
     spin_lock(&port->queued_iframes_spinlock);
     spin_lock(&port->istream_spinlock);
 	
@@ -943,6 +944,7 @@ int synccom_port_purge_rx(struct synccom_port *port)
 		
 	spin_unlock(&port->queued_iframes_spinlock);
     spin_unlock(&port->istream_spinlock);
+	mutex_unlock(&port->running_bc_mutex);
 	
 	return 1;
 }
